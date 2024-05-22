@@ -63,3 +63,34 @@ docker run \
     -e GITHUB_ACCESS_TOKEN='gh_***' \
     ghcr.io/redact-digital/docker-github-runner:latest
 ```
+
+## Using Docker (docker/build-push-action)
+
+If you are using the `docker/build-push-action` action to build and push your Docker image, you will need to add the volume `/var/run/docker.sock:/var/run/docker.sock` to the container. It is also possible that you need change the permissions of the docker socket on the host machine. If that is the case you can use `sudo chmod 666 /var/run/docker.sock`. This is not recommended for production environments because it can be a security risk.
+
+### Running the pre-built image using Docker Compose
+
+```yaml
+services:
+  app:
+    image: ghcr.io/redact-digital/docker-github-runner:latest
+    environment:
+      ORGANIZATION_NAME: 'your-organization-name'
+      GITHUB_ACCESS: 'ghp_***'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+```
+
+```bash
+docker compose up -d
+```
+
+### Running the pre-built image using Docker
+
+```bash
+docker run \
+    -e ORGANIZATION_NAME='your-organization-name' \
+    -e GITHUB_ACCESS_TOKEN='gh_***' \
+    -v /var/run/docker.sock:/var/run/docker.sock:ro \
+    ghcr.io/redact-digital/docker-github-runner:latest
+```
